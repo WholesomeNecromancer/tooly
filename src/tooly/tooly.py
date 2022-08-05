@@ -20,16 +20,19 @@ def use_tool(tool):
     # easy peasy.
     # suppose we could try with tryst.py itself
     # try to load the tool
-    importlib.import_module(tool)
+    toolmodule = importlib.import_module(tool)
+    # print("imported " + str(toolmodule))
     # get access to the tool's main()
-    toolmain = getattr(tool, "main")
+    toolclass = getattr(toolmodule, str(tool).capitalize())
+    # print("toolclass = " + str(toolclass))
     # get inputs from request body
     requestbody = request.json
+    # print("requestbody = " + str(requestbody))
     # now call toolman and capture outputs
-    tooltryst = Tryst()
-    toolmain(tooltryst, requestbody["args"])
+    toolinstance = toolclass()
+    toolinstance.main(requestbody["args"])
 
-    return jsonify(tooltryst.outputbuffer)
+    return jsonify(toolinstance.outputbuffer)
 
     # return tool + " requested!"
 
